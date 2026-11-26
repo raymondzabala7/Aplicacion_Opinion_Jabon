@@ -11,7 +11,7 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 :root[data-theme="dark"]{--bg:#0f1218;--card:#181c25;--text:#eef0f4;--muted:#9aa3b2;--line:#2a303c;--accent:#60a5fa;--accent-t:#0b1220;--ok:#4ade80}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:760px;margin:0 auto;padding:16px}
+main{max-width:640px;margin:0 auto;padding:16px}
 h1{font-size:1.4rem;margin:8px 0 2px}
 .sub{color:var(--muted);margin:0 0 16px}
 .steps{display:flex;gap:6px;margin-bottom:16px}
@@ -20,147 +20,80 @@ h1{font-size:1.4rem;margin:8px 0 2px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
 .card h2{font-size:1.1rem;margin:0 0 6px}
 .hint{color:var(--muted);font-size:.92rem;margin:0 0 12px}
-button,.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit;font-weight:600;cursor:pointer}
-button.primary,.btn.primary{background:var(--accent);color:var(--accent-t);border-color:var(--accent)}
+button,.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit;font-weight:600;cursor:pointer}
+.primary{background:var(--accent)!important;color:var(--accent-t)!important;border-color:var(--accent)!important}
 button:disabled{opacity:.45;cursor:not-allowed}
-.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
-.row>*{flex:1 1 180px}
-input[type=text],textarea{width:100%;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px}
-textarea{min-height:110px;resize:vertical}
-.cam{position:relative;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:4/3;display:none}
-.cam video{width:100%;height:100%;object-fit:cover}
-.cam i{position:absolute;inset:18% 18%;border:3px solid rgba(255,255,255,.85);border-radius:14px}
-.preview{width:100%;max-height:60vh;object-fit:contain;border-radius:12px;background:var(--bg);display:none;margin-top:12px}
-.code{display:inline-block;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
-.stars{display:flex;gap:4px;margin:8px 0 14px}
-.stars button{min-height:44px;width:44px;padding:0;font-size:1.6rem;border:none;background:none;color:var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.row>*{flex:1 1 160px}
+textarea{width:100%;min-height:110px;resize:vertical;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px}
+.preview{width:100%;max-height:60vh;object-fit:contain;border-radius:12px;background:var(--bg);display:none;margin-top:6px}
+.stars{display:flex;gap:4px;margin:10px 0 14px}
+.stars button{min-height:44px;width:44px;padding:0;font-size:1.7rem;border:none;background:none;color:var(--line)}
 .stars button.on{color:#f59e0b}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .pair figure{margin:0}
 .pair img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;background:var(--bg)}
 .pair figcaption{font-size:.85rem;color:var(--muted);text-align:center}
 .msg{color:var(--muted);font-size:.9rem;min-height:1.3em;margin-top:8px}
-.ok{color:var(--ok);font-weight:700}
-.hist{display:grid;gap:12px}
-.item{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card)}
-.item p{margin:8px 0 0}
+.ok{color:var(--ok)}
 .hidden{display:none!important}
-@media (min-width:700px){main{padding:28px}.row>*{flex:0 1 auto}}
 </style>
 </head>
 <body>
 <main>
-<h1>Antes y después de la prenda</h1>
-<p class="sub">Escanea el QR, fotografía la prenda sucia y limpia, y deja tu opinión.</p>
-<div class="steps" id="steps"><span></span><span></span><span></span><span></span></div>
+<h1>Antes y después de tu prenda</h1>
+<p class="sub">Toma dos fotos y cuéntanos qué te pareció el resultado.</p>
+<div class="steps" id="steps"><span></span><span></span><span></span></div>
 
 <section class="card" id="s1">
-  <h2>1. Escanea el código QR</h2>
-  <p class="hint">Apunta la cámara al QR de la prenda. También puedes subir una foto del QR o escribir el código.</p>
-  <div class="cam" id="cam"><video id="vid" playsinline muted></video><i></i></div>
+  <h2>1. Foto de la prenda sucia</h2>
+  <p class="hint">Toma la foto antes del lavado.</p>
+  <img class="preview" id="p1" alt="Prenda sucia">
   <div class="row">
-    <button class="primary" id="bScan">Abrir cámara</button>
-    <label class="btn">Subir foto del QR<input type="file" id="qrFile" accept="image/*" hidden></label>
+    <label class="btn primary">Tomar foto<input type="file" id="f1" accept="image/*" capture="environment" hidden></label>
+    <button id="n1" disabled>Siguiente</button>
   </div>
-  <div class="row"><input type="text" id="manual" placeholder="Código manual (ej. PRENDA-0042)" aria-label="Código manual"><button id="bManual">Usar código</button></div>
-  <div class="msg" id="m1"></div>
 </section>
 
 <section class="card hidden" id="s2">
-  <h2>2. Foto de la prenda sucia</h2>
-  <p class="hint">Código: <span class="code" id="c2"></span></p>
-  <img class="preview" id="p2" alt="Prenda sucia">
+  <h2>2. Foto de la prenda limpia</h2>
+  <p class="hint">Toma la foto de la misma prenda después del lavado.</p>
+  <img class="preview" id="p2" alt="Prenda limpia">
   <div class="row">
-    <label class="btn primary" id="l2">Tomar foto<input type="file" id="f2" accept="image/*" capture="environment" hidden></label>
+    <label class="btn primary">Tomar foto<input type="file" id="f2" accept="image/*" capture="environment" hidden></label>
     <button id="n2" disabled>Siguiente</button>
   </div>
 </section>
 
 <section class="card hidden" id="s3">
-  <h2>3. Foto de la prenda limpia</h2>
-  <p class="hint">Toma la foto de la misma prenda después del lavado.</p>
-  <img class="preview" id="p3" alt="Prenda limpia">
-  <div class="row">
-    <label class="btn primary">Tomar foto<input type="file" id="f3" accept="image/*" capture="environment" hidden></label>
-    <button id="n3" disabled>Siguiente</button>
-  </div>
-</section>
-
-<section class="card hidden" id="s4">
-  <h2>4. Tu opinión</h2>
+  <h2>3. Tu opinión</h2>
   <div class="pair"><figure><img id="r1" alt="Antes"><figcaption>Antes</figcaption></figure><figure><img id="r2" alt="Después"><figcaption>Después</figcaption></figure></div>
   <div class="stars" id="stars" role="radiogroup" aria-label="Calificación"></div>
   <textarea id="op" placeholder="Escribe tu opinión sobre el resultado…" maxlength="600"></textarea>
-  <div class="row"><button class="primary" id="save">Guardar registro</button><button id="restart">Cancelar</button></div>
-  <div class="msg" id="m4"></div>
+  <div class="row"><button class="primary" id="send">Enviar opinión</button></div>
+  <div class="msg" id="m3"></div>
 </section>
 
 <section class="card hidden" id="done">
-  <h2 class="ok">✓ Registro guardado</h2>
-  <p class="hint">Tu opinión quedó almacenada en este dispositivo.</p>
-  <button class="primary" id="again">Registrar otra prenda</button>
+  <h2 class="ok">✓ ¡Gracias por tu opinión!</h2>
+  <p class="hint">Tu opinión y tus fotos fueron enviadas correctamente.</p>
+  <button class="primary" id="again">Enviar otra</button>
 </section>
-
-<section id="histWrap" class="hidden"><h2 style="font-size:1.1rem">Registros guardados</h2><div class="hist" id="hist"></div></section>
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
 <script>
 (function(){
-var $=function(i){return document.getElementById(i)};
-var st={code:'',a:'',b:'',rate:0},stream=null,raf=0,KEY='prendas_registros';
-var mem=[];
+var ENDPOINT='https://script.google.com/macros/s/AKfycbxvXqfSabKf3EwrIN5QPSITFI8Sm2Mao8nU9VDoNCpSknmePgawMtJlEaz9Asbmf_Hx9w/exec';
 
-function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return mem}}
-function store(arr){mem=arr;try{localStorage.setItem(KEY,JSON.stringify(arr));return true}catch(e){return false}}
+var $=function(i){return document.getElementById(i)};
+var st={a:'',b:'',rate:0};
 
 function show(n){
-  ['s1','s2','s3','s4','done'].forEach(function(id){$(id).classList.add('hidden')});
+  ['s1','s2','s3','done'].forEach(function(id){$(id).classList.add('hidden')});
   $(n).classList.remove('hidden');
-  var idx={s1:1,s2:2,s3:3,s4:4,done:4}[n];
+  var idx={s1:1,s2:2,s3:3,done:3}[n];
   Array.prototype.forEach.call($('steps').children,function(el,i){el.classList.toggle('on',i<idx)});
   window.scrollTo({top:0,behavior:'smooth'});
-}
-
-/* ---- QR ---- */
-function stopCam(){
-  cancelAnimationFrame(raf);
-  if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}
-  $('cam').style.display='none';$('bScan').textContent='Abrir cámara';
-}
-function gotCode(v){
-  if(!v)return;
-  stopCam();st.code=String(v).trim().slice(0,200);
-  $('c2').textContent=st.code;show('s2');
-}
-function decodeCanvas(cv){
-  var ctx=cv.getContext('2d'),d=ctx.getImageData(0,0,cv.width,cv.height);
-  if(window.jsQR){var r=jsQR(d.data,d.width,d.height);return r&&r.data}
-  return null;
-}
-async function startCam(){
-  if(stream){stopCam();return}
-  $('m1').textContent='';
-  try{
-    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
-  }catch(e){
-    $('m1').textContent='No se pudo acceder a la cámara. Sube una foto del QR o escribe el código.';return;
-  }
-  var v=$('vid');v.srcObject=stream;await v.play();
-  $('cam').style.display='block';$('bScan').textContent='Cerrar cámara';
-  var cv=document.createElement('canvas'),det=null;
-  if('BarcodeDetector' in window){try{det=new BarcodeDetector({formats:['qr_code']})}catch(e){}}
-  (function loop(){
-    if(!stream)return;
-    if(v.readyState>=2&&v.videoWidth){
-      cv.width=v.videoWidth;cv.height=v.videoHeight;
-      cv.getContext('2d').drawImage(v,0,0);
-      if(det){
-        det.detect(cv).then(function(r){if(r.length)gotCode(r[0].rawValue)}).catch(function(){});
-      }else{var c=decodeCanvas(cv);if(c){gotCode(c);return}}
-    }
-    raf=requestAnimationFrame(loop);
-  })();
 }
 function readImg(file,max,q){
   return new Promise(function(res,rej){
@@ -173,85 +106,58 @@ function readImg(file,max,q){
         var s=Math.min(1,max/Math.max(im.width,im.height)),cv=document.createElement('canvas');
         cv.width=Math.round(im.width*s);cv.height=Math.round(im.height*s);
         cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
-        res({canvas:cv,url:cv.toDataURL('image/jpeg',q)});
+        res(cv.toDataURL('image/jpeg',q));
       };
       im.src=fr.result;
     };
     fr.readAsDataURL(file);
   });
 }
-$('bScan').onclick=startCam;
-$('qrFile').onchange=async function(e){
-  var f=e.target.files[0];if(!f)return;
-  $('m1').textContent='Leyendo QR…';
-  try{
-    var r=await readImg(f,1200,.9),code=null;
-    if('BarcodeDetector' in window){try{var o=await new BarcodeDetector({formats:['qr_code']}).detect(r.canvas);if(o.length)code=o[0].rawValue}catch(x){}}
-    if(!code)code=decodeCanvas(r.canvas);
-    if(code)gotCode(code);else $('m1').textContent='No se encontró un QR en la imagen. Intenta de nuevo o escribe el código.';
-  }catch(x){$('m1').textContent='No se pudo leer la imagen.'}
-  e.target.value='';
-};
-$('bManual').onclick=function(){
-  var v=$('manual').value.trim();
-  if(!v){$('m1').textContent='Escribe un código.';return}
-  gotCode(v);
-};
-
-/* ---- fotos ---- */
 function photo(inputId,prevId,btnId,key){
   $(inputId).onchange=async function(e){
     var f=e.target.files[0];if(!f)return;
     try{
-      var r=await readImg(f,720,.65);
-      st[key]=r.url;
-      var p=$(prevId);p.src=r.url;p.style.display='block';
+      st[key]=await readImg(f,900,.7);
+      var p=$(prevId);p.src=st[key];p.style.display='block';
       $(btnId).disabled=false;
-    }catch(x){alert('No se pudo procesar la foto.')}
+    }catch(x){alert('No se pudo procesar la foto. Intenta de nuevo.')}
     e.target.value='';
   };
 }
-photo('f2','p2','n2','a');photo('f3','p3','n3','b');
-$('n2').onclick=function(){show('s3')};
-$('n3').onclick=function(){$('r1').src=st.a;$('r2').src=st.b;show('s4')};
+photo('f1','p1','n1','a');photo('f2','p2','n2','b');
+$('n1').onclick=function(){show('s2')};
+$('n2').onclick=function(){$('r1').src=st.a;$('r2').src=st.b;show('s3')};
 
-/* ---- estrellas ---- */
 var box=$('stars');
+function paint(){Array.prototype.forEach.call(box.children,function(b,i){b.classList.toggle('on',i<st.rate)})}
 for(var i=1;i<=5;i++){(function(n){
   var b=document.createElement('button');b.type='button';b.textContent='★';b.setAttribute('aria-label',n+' de 5');
   b.onclick=function(){st.rate=n;paint()};box.appendChild(b);
 })(i)}
-function paint(){Array.prototype.forEach.call(box.children,function(b,i){b.classList.toggle('on',i<st.rate)})}
 
-/* ---- guardar ---- */
-function esc(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function renderHist(){
-  var arr=load();$('histWrap').classList.toggle('hidden',!arr.length);
-  $('hist').innerHTML=arr.slice().reverse().map(function(r){
-    return '<div class="item"><div><span class="code">'+esc(r.code)+'</span> <span style="color:#f59e0b">'+'★'.repeat(r.rate)+'</span> <small style="color:var(--muted)">'+esc(r.date)+'</small></div>'+
-    '<div class="pair" style="margin-top:8px"><figure><img src="'+r.a+'" alt="Antes"></figure><figure><img src="'+r.b+'" alt="Después"></figure></div>'+
-    (r.op?'<p>'+esc(r.op)+'</p>':'')+'</div>';
-  }).join('');
-}
-$('save').onclick=function(){
-  var op=$('op').value.trim();
-  if(!st.rate){$('m4').textContent='Elige una calificación.';return}
-  if(!op){$('m4').textContent='Escribe una opinión.';return}
-  var arr=load();
-  arr.push({code:st.code,a:st.a,b:st.b,rate:st.rate,op:op,date:new Date().toLocaleString('es-CO')});
-  if(!store(arr)){arr.shift();if(!store(arr)){$('m4').textContent='No hay espacio para guardar más registros en este dispositivo.';return}}
-  renderHist();show('done');
+$('send').onclick=async function(){
+  var m=$('m3'),btn=$('send'),op=$('op').value.trim();
+  if(!st.rate){m.textContent='Elige una calificación.';return}
+  if(!op){m.textContent='Escribe una opinión.';return}
+  if(ENDPOINT.indexOf('http')!==0){m.textContent='Falta configurar la dirección del servidor.';return}
+  btn.disabled=true;m.textContent='Enviando…';
+  try{
+    var r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({calificacion:st.rate,opinion:op,antes:st.a,despues:st.b})});
+    var j=await r.json();
+    if(!j.ok)throw new Error(j.error||'error');
+    show('done');m.textContent='';
+  }catch(e){
+    m.textContent='No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.';
+  }
+  btn.disabled=false;
 };
-function reset(){
-  stopCam();st={code:'',a:'',b:'',rate:0};
-  ['p2','p3'].forEach(function(i){$(i).style.display='none'});
-  $('n2').disabled=$('n3').disabled=true;$('op').value='';$('manual').value='';
-  $('m1').textContent=$('m4').textContent='';paint();show('s1');
-}
-$('restart').onclick=reset;$('again').onclick=reset;
-function fromHash(){var h='';try{h=decodeURIComponent(location.hash.slice(1))}catch(e){}if(h)gotCode(h)}
-window.addEventListener('hashchange',fromHash);
-renderHist();show('s1');fromHash();
+$('again').onclick=function(){
+  st={a:'',b:'',rate:0};
+  ['p1','p2'].forEach(function(i){$(i).style.display='none'});
+  $('n1').disabled=$('n2').disabled=true;$('op').value='';$('m3').textContent='';paint();show('s1');
+};
+show('s1');
 })();
 </script>
 </body>
