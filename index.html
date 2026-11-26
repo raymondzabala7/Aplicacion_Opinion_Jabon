@@ -37,6 +37,12 @@ textarea{width:100%;min-height:110px;resize:vertical;font:inherit;color:var(--te
 .msg{color:var(--muted);font-size:.9rem;min-height:1.3em;margin-top:8px}
 .ok{color:var(--ok)}
 .hidden{display:none!important}
+.wall h2{font-size:1.15rem;margin:24px 0 10px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.ih{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ih .st{color:#f59e0b;letter-spacing:2px}
+.ih small{color:var(--muted)}
+.item p{margin:10px 0 0;word-break:break-word}
 </style>
 </head>
 <body>
@@ -70,6 +76,7 @@ textarea{width:100%;min-height:110px;resize:vertical;font:inherit;color:var(--te
   <div class="pair"><figure><img id="r1" alt="Antes"><figcaption>Antes</figcaption></figure><figure><img id="r2" alt="Después"><figcaption>Después</figcaption></figure></div>
   <div class="stars" id="stars" role="radiogroup" aria-label="Calificación"></div>
   <textarea id="op" placeholder="Escribe tu opinión sobre el resultado…" maxlength="600"></textarea>
+  <p class="hint" style="margin-top:10px">Al enviar, tu opinión y tus fotos se mostrarán públicamente en esta página.</p>
   <div class="row"><button class="primary" id="send">Enviar opinión</button></div>
   <div class="msg" id="m3"></div>
 </section>
@@ -78,6 +85,12 @@ textarea{width:100%;min-height:110px;resize:vertical;font:inherit;color:var(--te
   <h2 class="ok">✓ ¡Gracias por tu opinión!</h2>
   <p class="hint">Tu opinión y tus fotos fueron enviadas correctamente.</p>
   <button class="primary" id="again">Enviar otra</button>
+</section>
+
+<section class="wall">
+  <h2>Opiniones de otros clientes</h2>
+  <div id="wall"></div>
+  <p class="msg" id="wallMsg">Cargando opiniones…</p>
 </section>
 </main>
 
@@ -135,18 +148,37 @@ for(var i=1;i<=5;i++){(function(n){
   b.onclick=function(){st.rate=n;paint()};box.appendChild(b);
 })(i)}
 
+function img(src,alt){var f=document.createElement('figure'),i=document.createElement('img'),c=document.createElement('figcaption');i.src=src;i.alt=alt;i.loading='lazy';c.textContent=alt;f.appendChild(i);f.appendChild(c);return f}
+function wall(){
+  fetch(ENDPOINT+'?accion=opiniones').then(function(r){return r.json()}).then(function(j){
+    var w=$('wall');w.innerHTML='';
+    if(!j.ok||!j.items||!j.items.length){$('wallMsg').textContent='Aún no hay opiniones. ¡Sé la primera persona!';return}
+    $('wallMsg').textContent='';
+    j.items.forEach(function(it){
+      var d=document.createElement('div');d.className='item';
+      var h=document.createElement('div');h.className='ih';
+      var s=document.createElement('span');s.className='st';
+      s.textContent='★'.repeat(it.calificacion)+'☆'.repeat(Math.max(0,5-it.calificacion));
+      var f=document.createElement('small');f.textContent=it.fecha;
+      h.appendChild(s);h.appendChild(f);d.appendChild(h);
+      if(it.antes&&it.despues){var p=document.createElement('div');p.className='pair';p.appendChild(img(it.antes,'Antes'));p.appendChild(img(it.despues,'Después'));d.appendChild(p)}
+      var t=document.createElement('p');t.textContent=it.opinion;d.appendChild(t);
+      w.appendChild(d);
+    });
+  }).catch(function(){$('wallMsg').textContent='No se pudieron cargar las opiniones.'});
+}
+
 $('send').onclick=async function(){
   var m=$('m3'),btn=$('send'),op=$('op').value.trim();
   if(!st.rate){m.textContent='Elige una calificación.';return}
   if(!op){m.textContent='Escribe una opinión.';return}
-  if(ENDPOINT.indexOf('http')!==0){m.textContent='Falta configurar la dirección del servidor.';return}
   btn.disabled=true;m.textContent='Enviando…';
   try{
     var r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify({calificacion:st.rate,opinion:op,antes:st.a,despues:st.b})});
     var j=await r.json();
     if(!j.ok)throw new Error(j.error||'error');
-    show('done');m.textContent='';
+    show('done');m.textContent='';wall();
   }catch(e){
     m.textContent='No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.';
   }
@@ -157,7 +189,7 @@ $('again').onclick=function(){
   ['p1','p2'].forEach(function(i){$(i).style.display='none'});
   $('n1').disabled=$('n2').disabled=true;$('op').value='';$('m3').textContent='';paint();show('s1');
 };
-show('s1');
+show('s1');wall();
 })();
 </script>
 </body>
